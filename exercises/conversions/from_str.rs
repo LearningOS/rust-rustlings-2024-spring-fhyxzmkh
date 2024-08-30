@@ -1,13 +1,10 @@
 // from_str.rs
 //
-// This is similar to from_into.rs, but this time we'll implement `FromStr` and
-// return errors instead of falling back to a default value. Additionally, upon
-// implementing FromStr, you can use the `parse` method on strings to generate
-// an object of the implementor type. You can read more about it at
-// https://doc.rust-lang.org/std/str/trait.FromStr.html
+// 这与 from_into.rs 类似，但这次我们将实现 `FromStr` 并返回错误，而不是回退到默认值。
+// 此外，在实现 FromStr 之后，你可以使用字符串上的 `parse` 方法生成实现类型的对象。
+// 你可以在 https://doc.rust-lang.org/std/str/trait.FromStr.html 阅读更多相关信息。
 //
-// Execute `rustlings hint from_str` or use the `hint` watch subcommand for a
-// hint.
+// 执行 `rustlings hint from_str` 或使用 `hint` 观察子命令以获取提示。
 
 use std::num::ParseIntError;
 use std::str::FromStr;
@@ -18,40 +15,54 @@ struct Person {
     age: usize,
 }
 
-// We will use this error type for the `FromStr` implementation.
+// 我们将使用这个错误类型来实现 `FromStr`。
 #[derive(Debug, PartialEq)]
 enum ParsePersonError {
-    // Empty input string
+    // 空输入字符串
     Empty,
-    // Incorrect number of fields
+    // 字段数量不正确
     BadLen,
-    // Empty name field
+    // 名字字段为空
     NoName,
-    // Wrapped error from parse::<usize>()
+    // 从 parse::<usize>() 包装的错误
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
-
-// Steps:
-// 1. If the length of the provided string is 0, an error should be returned
-// 2. Split the given string on the commas present in it
-// 3. Only 2 elements should be returned from the split, otherwise return an
-//    error
-// 4. Extract the first element from the split operation and use it as the name
-// 5. Extract the other element from the split operation and parse it into a
-//    `usize` as the age with something like `"4".parse::<usize>()`
-// 6. If while extracting the name and the age something goes wrong, an error
-//    should be returned
-// If everything goes well, then return a Result of a Person object
+// 步骤：
+// 1. 如果提供的字符串长度为 0，应返回一个错误
+// 2. 根据字符串中存在的逗号将其分割
+// 3. 分割操作应只返回 2 个元素，否则返回一个错误
+// 4. 提取分割操作的第一个元素并将其用作名字
+// 5. 提取分割操作的另一个元素并将其解析为 `usize` 类型的年龄，例如 `"4".parse::<usize>()`
+// 6. 如果在提取名字和年龄时出现问题，应返回一个错误
+// 如果一切顺利，则返回一个 Person 对象的 Result
 //
-// As an aside: `Box<dyn Error>` implements `From<&'_ str>`. This means that if
-// you want to return a string error message, you can do so via just using
-// return `Err("my error message".into())`.
+// 顺便说一下：`Box<dyn Error>` 实现了 `From<&'_ str>`。这意味着如果你想返回一个字符串错误消息，
+// 你可以通过 `return Err("my error message".into())` 来实现。
 
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.is_empty() {
+            Err(ParsePersonError::Empty)
+        } else {
+            let info: Vec<&str> = s.split(',').collect();
+            if info.len() != 2 {
+                Err(ParsePersonError::BadLen)
+            } else {
+                if info[0].is_empty() {
+                    Err(ParsePersonError::NoName)
+                } else {
+                    match info[1].parse::<usize>() {
+                        Ok(age) => Ok(Person {
+                            name: info[0].to_string(),
+                            age,
+                        }),
+                        Err(e) => Err(ParsePersonError::ParseInt(e)),
+                    }
+                }
+            }
+        }
     }
 }
 

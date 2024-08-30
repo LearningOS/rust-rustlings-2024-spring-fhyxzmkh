@@ -1,38 +1,38 @@
 // iterators2.rs
 //
-// In this exercise, you'll learn some of the unique advantages that iterators
-// can offer. Follow the steps to complete the exercise.
+// 在这个练习中，你将学习到迭代器的一些独特优势。按照步骤完成练习。
 //
-// Execute `rustlings hint iterators2` or use the `hint` watch subcommand for a
-// hint.
+// 执行 `rustlings hint iterators2` 或使用 `hint` 观察子命令以获取提示。
 
-// I AM NOT DONE
-
-// Step 1.
-// Complete the `capitalize_first` function.
+// 第一步。
+// 完成 `capitalize_first` 函数。
 // "hello" -> "Hello"
 pub fn capitalize_first(input: &str) -> String {
     let mut c = input.chars();
     match c.next() {
         None => String::new(),
-        Some(first) => ???,
+        Some(first) => first.to_uppercase().to_string() + c.as_str(),
     }
 }
 
-// Step 2.
-// Apply the `capitalize_first` function to a slice of string slices.
-// Return a vector of strings.
+// 第二步。
+// 将 `capitalize_first` 函数应用于字符串切片的切片。
+// 返回一个字符串向量。
 // ["hello", "world"] -> ["Hello", "World"]
 pub fn capitalize_words_vector(words: &[&str]) -> Vec<String> {
-    vec![]
+    words.iter().map(|&word| capitalize_first(word)).collect()
 }
 
-// Step 3.
-// Apply the `capitalize_first` function again to a slice of string slices.
-// Return a single string.
+// 第三步。
+// 再次将 `capitalize_first` 函数应用于字符串切片的切片。
+// 返回一个字符串。
 // ["hello", " ", "world"] -> "Hello World"
 pub fn capitalize_words_string(words: &[&str]) -> String {
-    String::new()
+    words
+        .iter()
+        .map(|&word| capitalize_first(word))
+        .collect::<Vec<String>>()
+        .join("")
 }
 
 #[cfg(test)]
